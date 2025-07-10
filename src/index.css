@@ -1,0 +1,32 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #ffffff;
+  --text-color: #000000;
+  --accent-color: #ff0000;
+}
+
+body {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+}
+
+input, select, button {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border: 2px solid var(--accent-color);
+}
+
+button {
+  background-color: var(--accent-color);
+  color: var(--text-color);
+}
+
+select {
+  border-color: var(--accent-color);
+}
+
+
