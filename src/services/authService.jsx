@@ -1,7 +1,7 @@
 // src/services/authService.js
 
 // A URL base da sua API de autenticação. Ajuste a porta (3001) e o caminho base (/api/auth) conforme o seu backend.
-const API_URL = 'http://localhost:3001/auth/'; 
+const API_URL = 'https://lista-compras-backend-api-render.onrender.com/auth/'; 
 
 // Função para registrar um novo usuário
 const register = async (userData) => {
