@@ -32,7 +32,7 @@ function ListItems({ idLista, triggerUpdateChange, userToken }) {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:3001/items/lista/${atualIdLista}`, {
+      const response = await fetch(`https://lista-compras-backend-api-render.onrender.com/items/lista/${atualIdLista}`, {
         headers: {
           'Authorization': `Bearer ${userToken}`
         }
@@ -72,7 +72,7 @@ function ListItems({ idLista, triggerUpdateChange, userToken }) {
     }
 
     try {
-        const response = await fetch(`http://localhost:3001/items/${itemId}`, {
+        const response = await fetch(`https://lista-compras-backend-api-render.onrender.com/items/${itemId}`, {
             method: "DELETE",
             headers: {
                 'Authorization': `Bearer ${userToken}`
@@ -107,7 +107,7 @@ function ListItems({ idLista, triggerUpdateChange, userToken }) {
     const novoEstado = currentEstado === 'COMPLETO' ? 'PENDENTE' : 'COMPLETO';
 
     try {
-        const response = await fetch(`http://localhost:3001/items/toggle-state/${itemId}`, {
+        const response = await fetch(`https://lista-compras-backend-api-render.onrender.com/items/toggle-state/${itemId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

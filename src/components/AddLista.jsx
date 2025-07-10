@@ -26,7 +26,7 @@ const AddLista = ({ idUsuario, userToken }) => {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:3001/listas/${idUsuario}`, {
+      const response = await fetch(`https://lista-compras-backend-api-render.onrender.com/listas/${idUsuario}`, {
         headers: {
           'Authorization': `Bearer ${userToken}`
         }
@@ -75,7 +75,7 @@ const AddLista = ({ idUsuario, userToken }) => {
     };
 
     try {
-      const response = await fetch('http://localhost:3001/listas', {
+      const response = await fetch('https://lista-compras-backend-api-render.onrender.com/listas', {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json',
@@ -116,7 +116,7 @@ const AddLista = ({ idUsuario, userToken }) => {
         return;
     }
     try {
-      const response = await fetch(`http://localhost:3001/listas/${id}`, {
+      const response = await fetch(`https://lista-compras-backend-api-render.onrender.com/listas/${id}`, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${userToken}`
@@ -159,7 +159,7 @@ const AddLista = ({ idUsuario, userToken }) => {
         return;
     }
     try {
-      const response = await fetch(`http://localhost:3001/listas/${id}`, {
+      const response = await fetch(`https://lista-compras-backend-api-render.onrender.com/listas/${id}`, {
         method: 'PUT',
         headers: { 
             'Content-Type': 'application/json',

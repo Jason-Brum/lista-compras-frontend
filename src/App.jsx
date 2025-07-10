@@ -39,7 +39,7 @@ function MainAppContent() {
 
     function fetchListas() {
         if (!idUsuario) { setListas([]); return; }
-        fetch(`http://localhost:3001/listas/${idUsuario}`, { headers: { 'Authorization': user && user.token ? `Bearer ${user.token}` : '' } })
+        fetch(`https://lista-compras-backend-api-render.onrender.com/listas/${idUsuario}`, { headers: { 'Authorization': user && user.token ? `Bearer ${user.token}` : '' } })
             .then((res) => {
                 if (res.status === 401 || res.status === 403) { logout(); navigate('/login'); showAlert('Sessão expirada ou acesso negado. Faça login novamente.'); throw new Error('Sessão expirada ou acesso negado. Faça login novamente.'); }
                 return res.json();
@@ -56,7 +56,7 @@ function MainAppContent() {
         if (!isConfirmed) { return; }
 
         try {
-            const res = await fetch(`http://localhost:3001/items/lista/${listId}`, { method: "DELETE", headers: { 'Authorization': user && user.token ? `Bearer ${user.token}` : '' } });
+            const res = await fetch(`https://lista-compras-backend-api-render.onrender.com/items/lista/${listId}`, { method: "DELETE", headers: { 'Authorization': user && user.token ? `Bearer ${user.token}` : '' } });
             if (res.status === 401 || res.status === 403) { logout(); navigate('/login'); await showAlert('Sessão expirada ou token expirado.'); throw new Error('Sessão expirada ou token expirado.'); }
             if (res.ok) {
                 try { const data = await res.json(); if (data.erro) throw new Error(data.erro); await showAlert("Itens da lista limpos com sucesso!"); }

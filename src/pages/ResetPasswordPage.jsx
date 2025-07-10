@@ -45,7 +45,7 @@ function ResetPasswordPage() {
 
         try {
             // Chamada ao backend para redefinir a senha
-            const response = await fetch(`http://localhost:3001/auth/reset-password/${token}`, {
+            const response = await fetch(`https://lista-compras-backend-api-render.onrender.com/auth/reset-password/${token}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

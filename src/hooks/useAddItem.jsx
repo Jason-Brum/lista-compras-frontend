@@ -20,7 +20,7 @@ export const useAddItem = (userToken) => { // Aceita userToken como prop
                 return;
             }
             try {
-                const res = await fetch("http://localhost:3001/categorias", {
+                const res = await fetch("https://lista-compras-backend-api-render.onrender.com/categorias", {
                     headers: {
                         'Authorization': `Bearer ${currentToken}` // Envia o token
                     }
@@ -76,7 +76,7 @@ export const useAddItem = (userToken) => { // Aceita userToken como prop
         };
 
         try {
-            const res = await fetch("http://localhost:3001/items", {
+            const res = await fetch("https://lista-compras-backend-api-render.onrender.com/items", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
