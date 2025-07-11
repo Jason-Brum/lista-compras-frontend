@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { Plus, Edit, Trash2, Save, X } from 'lucide-react'; 
 import { useTheme } from '../context/ThemeContext'; // <-- NOVO: Importar useTheme aqui
 import themes from '../themes'; // <-- NOVO: Importar themes aqui
+import { useModal } from '../context/ModalContext';
 
 const AddLista = ({ idUsuario, userToken }) => {
   const [listas, setListas] = useState([]);
@@ -13,6 +14,7 @@ const AddLista = ({ idUsuario, userToken }) => {
   const [error, setError] = useState(null);
   const { logout, navigate } = useAuth();
   const { theme } = useTheme(); // <-- NOVO: Obter o tema do contexto
+  const { showAlert } = useModal();
 
   async function fetchListas() {
     if (!idUsuario || !userToken) {
@@ -98,11 +100,11 @@ const AddLista = ({ idUsuario, userToken }) => {
       const data = await response.json();
       setListas([...listas, data]);
       setNovaLista('');
-      alert(data.mensagem);
+      await showAlert(data.mensagem);
       setError(null);
     } catch (err) {
       console.error('Erro ao adicionar lista:', err.message);
-      alert(`Erro ao adicionar lista: ${err.message}`);
+      await showAlert(`Erro ao adicionar lista: ${err.message}`);
       setError(err.message);
     }
   };
