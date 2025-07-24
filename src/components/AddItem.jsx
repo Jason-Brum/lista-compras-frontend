@@ -32,7 +32,7 @@ const AddItem = ({ onItemAdded, idLista, userToken }) => {
     const novoItem = await adicionarItem(idLista);
     if (novoItem && onItemAdded) {
       onItemAdded(novoItem);
-      setIsCollapsed(true);
+      //setIsCollapsed(true);
     }
   };
 
