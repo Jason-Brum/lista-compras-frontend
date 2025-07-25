@@ -3,7 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import themes from '../themes';
-import { useModal } from '../context/ModalContext'; // <-- Já importado
+import { useModal } from '../context/ModalContext'; 
+import { useNavigate } from 'react-router-dom'; 
 
 const AddLista = ({ idUsuario, userToken }) => {
   const [listas, setListas] = useState([]);
@@ -12,7 +13,8 @@ const AddLista = ({ idUsuario, userToken }) => {
   const [nomeEditado, setNomeEditado] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { logout, navigate } = useAuth();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
   const { theme } = useTheme();
   const { showAlert } = useModal(); // <-- Já obtido
 
