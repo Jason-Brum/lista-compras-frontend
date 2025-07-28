@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TrashIcon } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import Button from "./Button";
@@ -11,7 +12,8 @@ function ListItems({ idLista, triggerUpdateChange, userToken }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { logout, navigate } = useAuth();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const { showAlert, showConfirm } = useModal();
 
   async function fetchItems(atualIdLista) {
@@ -32,7 +34,7 @@ function ListItems({ idLista, triggerUpdateChange, userToken }) {
     setError(null);
 
     try {
-      const response = await fetch(`https://lista-compras-backend-api-render.onrender.com/items/lista/${atualIdLista}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/items/lista/${atualIdLista}`, {
         headers: {
           'Authorization': `Bearer ${userToken}`
         }
@@ -72,7 +74,7 @@ function ListItems({ idLista, triggerUpdateChange, userToken }) {
     }
 
     try {
-        const response = await fetch(`https://lista-compras-backend-api-render.onrender.com/items/${itemId}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/items/${itemId}`, {
             method: "DELETE",
             headers: {
                 'Authorization': `Bearer ${userToken}`
@@ -107,7 +109,7 @@ function ListItems({ idLista, triggerUpdateChange, userToken }) {
     const novoEstado = currentEstado === 'COMPLETO' ? 'PENDENTE' : 'COMPLETO';
 
     try {
-        const response = await fetch(`https://lista-compras-backend-api-render.onrender.com/items/toggle-state/${itemId}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/items/toggle-state/${itemId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -141,7 +143,7 @@ function ListItems({ idLista, triggerUpdateChange, userToken }) {
 
   useEffect(() => {
     fetchItems(idLista);
-  }, [idLista, triggerUpdateChange, userToken, logout, navigate, showAlert]);
+  }, [idLista, triggerUpdateChange, userToken]);
 
   const groupedItems = useMemo(() => {
     if (!items || items.length === 0) {
@@ -180,22 +182,15 @@ function ListItems({ idLista, triggerUpdateChange, userToken }) {
             {categoryName}
           </h2>
           <ul
-            // p-3 no UL para padding geral dentro do container da lista
             className="space-y-2 rounded-md shadow-md p-3"
             style={{ backgroundColor: themes[theme].primaryColor, color: themes[theme].textColor }}
           >
             {groupedItems[categoryName].map((item, index) => (
               <li key={item.idItem}
-                  // Flex container com gap-2 para separar item do botão da lixeira
-                  // items-stretch para garantir mesma altura
-                  // rounded-md para as bordas do LI
-                  // mb-2 para espaçamento entre os LIs (exceto o último)
                   className={`flex gap-2 items-stretch rounded-md ${index < groupedItems[categoryName].length - 1 ? 'mb-2' : ''}`}
               >
                 <button
                   onClick={() => onToggleItemClick(item.idItem, item.estado)}
-                  // Botão do item: ocupa o espaço flex-grow, padding para "respiro" interno
-                  // rounded-l-md para borda esquerda arredondada
                   className={`text-left transition-opacity text-lg flex items-center flex-grow px-3 py-2 rounded-l-md rounded-r-md ${
                     item.isCompleted ? 'line-through opacity-70' : 'opacity-100'
                   }`}
@@ -205,13 +200,11 @@ function ListItems({ idLista, triggerUpdateChange, userToken }) {
                 </button>
                 <Button
                   onClick={() => onDeleteItemClick(item.idItem)}
-                  // Botão da lixeira: não cresce, borda direita arredondada
-                  // Padding fixo e border-radius para casar visualmente
                   className="flex-shrink-0 rounded-r-md"
                   style={{
                       backgroundColor: themes[theme].accentColor,
                       color: themes[theme].textColor,
-                      padding: '8px', // Padding fixo
+                      padding: '8px',
                   }}
                   aria-label={`Deletar ${item.nome}`}
                 >

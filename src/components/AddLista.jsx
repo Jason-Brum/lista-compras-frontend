@@ -3,7 +3,10 @@ import { useAuth } from '../context/AuthContext';
 import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import themes from '../themes';
-import { useModal } from '../context/ModalContext'; // <-- Já importado
+import { useModal } from '../context/ModalContext';
+
+// NOVO: Adicionar esta constante para a URL base da API
+const API_URL_BASE = import.meta.env.VITE_API_BASE_URL; // <-- MUDANÇA AQUI
 
 const AddLista = ({ idUsuario, userToken }) => {
   const [listas, setListas] = useState([]);
@@ -14,7 +17,7 @@ const AddLista = ({ idUsuario, userToken }) => {
   const [error, setError] = useState(null);
   const { logout, navigate } = useAuth();
   const { theme } = useTheme();
-  const { showAlert } = useModal(); // <-- Já obtido
+  const { showAlert, showConfirm } = useModal(); // <-- Adicionado showConfirm aqui, caso precise para alert na edicao/remocao
 
   async function fetchListas() {
     if (!idUsuario || !userToken) {
@@ -28,10 +31,8 @@ const AddLista = ({ idUsuario, userToken }) => {
     setError(null);
 
     try {
-      const response = await fetch(`https://lista-compras-backend-api-render.onrender.com/listas/${idUsuario}`, {
-        headers: {
-          'Authorization': `Bearer ${userToken}`
-        }
+      const response = await fetch(`${API_URL_BASE}/listas/${idUsuario}`, { // <-- MUDANÇA AQUI: Usando API_URL_BASE
+        headers: { 'Authorization': `Bearer ${userToken}` }
       });
 
       if (response.status === 401 || response.status === 403) {
@@ -62,11 +63,11 @@ const AddLista = ({ idUsuario, userToken }) => {
 
   const adicionarLista = async () => {
     if (novaLista.trim() === '') {
-      await showAlert("Verifique se o campo de nova lista não está vazio!"); // <-- Já usando showAlert
+      await showAlert("Verifique se o campo de nova lista não está vazio!");
       return;
     }
     if (!idUsuario || !userToken) {
-        await showAlert("Você precisa estar logado para adicionar listas."); // <-- Já usando showAlert
+        await showAlert("Você precisa estar logado para adicionar listas.");
         return;
     }
 
@@ -77,12 +78,9 @@ const AddLista = ({ idUsuario, userToken }) => {
     };
 
     try {
-      const response = await fetch('https://lista-compras-backend-api-render.onrender.com/listas', {
+      const response = await fetch(`${API_URL_BASE}/listas`, { // <-- MUDANÇA AQUI: Usando API_URL_BASE
         method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${userToken}`
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${userToken}` },
         body: JSON.stringify(nova),
       });
 
@@ -94,8 +92,7 @@ const AddLista = ({ idUsuario, userToken }) => {
 
       // Verifica se a resposta NÃO é OK (ex: status 400 para limite atingido)
       if (!response.ok) {
-        const errorData = await response.json(); // Tenta ler o corpo da resposta de erro
-        // MUDANÇA AQUI: Joga a mensagem de erro específica do backend para o catch
+        const errorData = await response.json();
         throw new Error(errorData.erro || 'Falha ao adicionar lista: Erro desconhecido do servidor.');
       }
 
@@ -106,7 +103,6 @@ const AddLista = ({ idUsuario, userToken }) => {
       setError(null);
     } catch (err) {
       console.error('Erro ao adicionar lista:', err.message);
-      // MUDANÇA AQUI: Exibe a mensagem exata que veio do backend (err.message)
       await showAlert(err.message); 
       setError(err.message);
     }
@@ -117,16 +113,16 @@ const AddLista = ({ idUsuario, userToken }) => {
         await showAlert("Você precisa estar logado para remover listas.");
         return;
     }
+    // MUDANÇA AQUI: Usar showConfirm
     const isConfirmed = await showConfirm("Tem certeza que deseja remover esta lista? Isso também removerá todos os itens dela!");
     if (!isConfirmed) {
         return;
     }
-    try {
-      const response = await fetch(`https://lista-compras-backend-api-render.onrender.com/listas/${id}`, {
+
+    try { // <-- Mover o try/catch para englobar o fetch
+      const response = await fetch(`${API_URL_BASE}/listas/${id}`, { // <-- MUDANÇA AQUI: Usando API_URL_BASE
         method: 'DELETE',
-        headers: {
-            'Authorization': `Bearer ${userToken}`
-        }
+        headers: { 'Authorization': `Bearer ${userToken}` }
       });
 
       if (response.status === 401 || response.status === 403) {
@@ -165,12 +161,9 @@ const AddLista = ({ idUsuario, userToken }) => {
         return;
     }
     try {
-      const response = await fetch(`https://lista-compras-backend-api-render.onrender.com/listas/${id}`, {
+      const response = await fetch(`${API_URL_BASE}/listas/${id}`, { // <-- MUDANÇA AQUI: Usando API_URL_BASE
         method: 'PUT',
-        headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${userToken}`
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${userToken}` },
         body: JSON.stringify({ nomeDaLista: nomeEditado }),
       });
 

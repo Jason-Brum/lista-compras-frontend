@@ -1,7 +1,9 @@
 // src/services/authService.js
+// A URL base da sua API de autenticação.
+// Usamos import.meta.env para acessar variáveis de ambiente do Vite.
+const API_URL_BASE = import.meta.env.VITE_API_BASE_URL; // <-- MUDANÇA AQUI
 
-// A URL base da sua API de autenticação. Ajuste a porta (3001) e o caminho base (/api/auth) conforme o seu backend.
-const API_URL = 'https://lista-compras-backend-api-render.onrender.com/auth/'; 
+const API_URL = `${API_URL_BASE}/auth/`; // Constrói a URL completa para auth
 
 // Função para registrar um novo usuário
 const register = async (userData) => {

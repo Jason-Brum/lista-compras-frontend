@@ -1,10 +1,14 @@
+// src/hooks/useAddItem.js
 import { useState, useEffect } from "react";
-import { useAuth } from '../context/AuthContext'; // Importar useAuth para acessar o token diretamente ou passá-lo como prop
+import { useAuth } from '../context/AuthContext';
+import { useModal } from '../context/ModalContext.jsx'; // <-- CORREÇÃO 1: Importar o hook do modal
 
-// Você pode passar o userToken como argumento para o hook, ou importá-lo via useAuth
-export const useAddItem = (userToken) => { // Aceita userToken como prop
-    const { user } = useAuth(); // Alternativa: Obter o token diretamente do contexto
-    const currentToken = userToken || user?.token; // Prioriza prop, senão pega do contexto
+const API_URL_BASE = import.meta.env.VITE_API_BASE_URL;
+
+export const useAddItem = (userToken) => {
+    const { user, logout, navigate } = useAuth();
+    const { showAlert } = useModal(); // <-- CORREÇÃO 2: Chamar o hook para pegar a função
+    const currentToken = userToken || user?.token;
 
     const [item, setItem] = useState("");
     const [quantidade, setQuantidade] = useState("");
@@ -13,26 +17,21 @@ export const useAddItem = (userToken) => { // Aceita userToken como prop
     const [erros, setErros] = useState({});
 
     useEffect(() => {
-        // Incluir o token na requisição de categorias
         async function fetchCategorias() {
-            if (!currentToken) { // Não tenta buscar categorias se não houver token
-                setCategorias([]); // Limpa categorias se não houver token
+            if (!currentToken) {
+                setCategorias([]);
                 return;
             }
             try {
-                const res = await fetch("https://lista-compras-backend-api-render.onrender.com/categorias", {
+                const res = await fetch(`${API_URL_BASE}/categorias`, {
                     headers: {
-                        'Authorization': `Bearer ${currentToken}` // Envia o token
+                        'Authorization': `Bearer ${currentToken}`
                     }
                 });
 
                 if (res.status === 401 || res.status === 403) {
-                    // Se a busca de categorias falhar por auth, o ideal é que o AuthProvider/MainAppContent
-                    // já lide com o logout/redirecionamento se for uma rota globalmente protegida.
-                    // Mas para garantir, podemos tratar aqui também.
                     console.error("Erro de autenticação ao buscar categorias. Possivelmente token expirado.");
-                    setCategorias([]); // Limpa as categorias
-                    // NAVEGUE ou deslogue aqui se essa rota é crítica para não-autenticados
+                    setCategorias([]);
                     return; 
                 }
 
@@ -45,15 +44,13 @@ export const useAddItem = (userToken) => { // Aceita userToken como prop
                 setCategorias(data);
             } catch (err) {
                 console.error("Erro ao buscar categorias:", err.message);
-                // alert(`Erro ao carregar categorias: ${err.message}`);
-                setCategorias([]); // Garante que a lista esteja vazia em caso de erro
+                setCategorias([]);
             }
         }
         fetchCategorias();
-    }, [currentToken]); // Refaz a busca quando o token muda
+    }, [currentToken, logout, navigate]); 
 
     const adicionarItem = async (idLista) => {
-        // Reinicia os erros no início da submissão
         setErros({}); 
         
         const novosErros = {};
@@ -62,7 +59,6 @@ export const useAddItem = (userToken) => { // Aceita userToken como prop
         if (!quantidade) { novosErros.quantidade = "Campo quantidade é obrigatório."; }
         if (!categoria) { novosErros.categoria = "A categoria deve ser selecionada."; }
         
-
         if (Object.keys(novosErros).length > 0) {
             setErros(novosErros);
             return null;
@@ -76,39 +72,35 @@ export const useAddItem = (userToken) => { // Aceita userToken como prop
         };
 
         try {
-            const res = await fetch("https://lista-compras-backend-api-render.onrender.com/items", {
+            const response = await fetch(`${API_URL_BASE}/items`, { 
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    'Authorization': `Bearer ${currentToken}` // Envia o token aqui
-                },
+                headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${currentToken}` },
                 body: JSON.stringify(novoItem),
             });
 
-            if (res.status === 401 || res.status === 403) {
-                // Se a adição do item falhar por auth, desloga
-                logout(); // Função de logout do AuthContext
-                // navigate('/login'); // Navegue para login, se precisar
+            if (response.status === 401 || response.status === 403) {
+                logout(); 
+                navigate('/login'); 
                 throw new Error('Não autorizado ou token expirado ao adicionar item.');
             }
 
-            if (!res.ok) {
-                const errorData = await res.json();
+            if (!response.ok) {
+                const errorData = await response.json();
                 throw new Error(errorData.erro || "Erro ao adicionar item do backend.");
             }
 
-            const data = await res.json();
+            const data = await response.json();
 
-            // Limpa os campos após adicionar
             setItem("");
             setQuantidade("");
             setCategoria("");
-            setErros({}); // Limpa os erros após adicionar com sucesso
+            setErros({}); 
 
             return data;
         } catch (err) {
             console.error("Erro ao adicionar item:", err.message);
-            alert(`Erro ao adicionar item: ${err.message}`);
+            // <-- CORREÇÃO 3: Substituir o alert() padrão pelo showAlert customizado
+            await showAlert(err.message); 
             return null;
         }
     };
