@@ -6,7 +6,7 @@ const themes = {
     name: "Elegante",
     backgroundImage: "url('/assets/themes/elegante.jpg')", // <-- Caminho para a nova imagem
     primaryColor: "#F5F5DC",
-    textColor: "#36454F",
+    textColor: "#9c9c9cff",
     accentColor: "#8B4513",
     selectBackgroundColor: "#E8E8E8",
     selectTextColor: "#36454F",
